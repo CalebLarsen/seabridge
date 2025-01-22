@@ -1,0 +1,12 @@
+-I/opt/homebrew/opt/python@3.13/Frameworks/Python.framework/Versions/3.13/include/python3.13
+-I/opt/homebrew/opt/python@3.13/Frameworks/Python.framework/Versions/3.13/include/python3.13
+-I/opt/homebrew/lib/ghc-9.10.1/lib/aarch64-osx-ghc-9.10.1/rts-1.0.2/include
+-fno-strict-overflow
+-Wsign-compare
+-Wunreachable-code
+-fno-common
+-dynamic
+-DNDEBUG
+-g
+-O3
+-Wall

@@ -1,0 +1,11 @@
+# Compilation artifacts
+seabridge
+c-out
+fortran-out
+go-out
+hs-out
+*.mod
+target
+zig-out
+src/*.o
+.zig-cache
