@@ -14,21 +14,25 @@ LDFLAGS := $(LDFLAGS) -I/opt/homebrew/lib/ghc-9.10.1/lib/aarch64-osx-ghc-9.10.1/
 LDFLAGS := $(LDFLAGS) -lgfortran -L/opt/homebrew/lib/gcc/current
 
 all: seabridge
-	leaks -quiet --atExit -- ./seabridge fortran
+	leaks -quiet --atExit -- ./seabridge asm
 # ./seabridge c
 # ./seabridge rust
 # ./seabridge zig
 # ./seabridge go
 
 # seabridge: c-out/main.o target/debug/libprint_rust.a zig-out/lib/libprint_zig.a src/print.py
-seabridge: src/main.c target/debug/libprint_rust.a zig-out/lib/libprint_zig.a hs-out/Print.o go-out/libprint_go.a fortran-out/libprint_fortran.o
-	ghc $(LDFLAGS) --make -no-hs-main -optc-O -g src/main.c hs-out/Print.o fortran-out/libprint_fortran.o -o seabridge
+seabridge: src/main.c target/debug/libprint_rust.a zig-out/lib/libprint_zig.a hs-out/Print.o go-out/libprint_go.a fortran-out/libprint_fortran.o asm-out/asm_print.o
+	ghc $(LDFLAGS) --make -no-hs-main -optc-O -g src/main.c hs-out/Print.o fortran-out/libprint_fortran.o asm-out/asm_print.o -o seabridge
 # @clang $(LDFLAGS) -o seabridge c-out/main.o
 
 # c-out/main.o: src/main.c src/print.py
 c-out/main.o: src/main.c
 	@mkdir -p c-out
 	clang $(CFLAGS) -o c-out/main.o -c src/main.c
+
+asm-out/asm_print.o: src/print.s
+	@mkdir -p asm-out
+	as -g -o asm-out/asm_print.o src/print.s
 
 target/debug/libprint_rust.a: src/print.rs
 	cargo build

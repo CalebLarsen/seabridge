@@ -4,12 +4,11 @@
 #include "../go-out/libprint_go.h"
 
 #include "../hs-out/Print_stub.h"
-// #define PY_SSIZE_T_CLEAN
-// #include <Python.h>
 
 extern char* day_rust_2(char*);
 extern char* day_zig_3(char*);
 extern char* day_fortran_6(char*);
+extern char* day_asm_7(char*);
 
 
 char* day_c_1(char* so_far){
@@ -74,6 +73,18 @@ int main(int argc, char** argv){
   else if (strcmp("fortran", argv[1]) == 0){
     char* start = strdup("On the sixth day of PL, Turing gave to me:\n");
     char* six  = day_fortran_6(start);
+    char* five  = day_haskell_5(six);
+    char* four  = day_go_4(five);
+    char* three = day_zig_3(four);
+    char* two   = day_rust_2(three);
+    char* one   = day_c_1(two);
+    printf("%s", one);
+    free(one);
+  }
+  else if (strcmp("asm", argv[1]) == 0){
+    char* start = strdup("On the seventh day of PL, Turing gave to me:\n");
+    char* seven  = day_asm_7(start);
+    char* six  = day_fortran_6(seven);
     char* five  = day_haskell_5(six);
     char* four  = day_go_4(five);
     char* three = day_zig_3(four);
