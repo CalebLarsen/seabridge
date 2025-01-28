@@ -1,4 +1,4 @@
-CFLAGS= -g
+CFLAGS := $(CFLAGS) -g
 # CFLAGS= $(CFLAGS) $(shell /opt/homebrew/bin/python3-config --cflags)
 # # Python
 # LDFLAGS=$(shell /opt/homebrew/bin/python3-config --ldflags --embed)
@@ -12,9 +12,11 @@ LDFLAGS := $(LDFLAGS) -lprint_go -L./go-out
 LDFLAGS := $(LDFLAGS) -I/opt/homebrew/lib/ghc-9.10.1/lib/aarch64-osx-ghc-9.10.1/rts-1.0.2/include
 # Fortran
 LDFLAGS := $(LDFLAGS) -lgfortran -L/opt/homebrew/lib/gcc/current
+# Lua
+LDFLAGS := $(LDFLAGS) -I/usr/local/include/luajit-2.1 -lluajit-5.1.2 -L/usr/local/lib
 
 all: seabridge
-	leaks -quiet --atExit -- ./seabridge asm
+	leaks -quiet --atExit -- ./seabridge lua
 # ./seabridge c
 # ./seabridge rust
 # ./seabridge zig
@@ -57,4 +59,5 @@ clean:
 	rm -rf zig-out/
 	rm -rf go-out
 	rm -rf fortran-out
+	rm -rf asm-out
 	rm *.mod

@@ -6,10 +6,8 @@
 .global _day_asm_7
 
 _day_asm_7:
+        // Store registers
         stp fp, lr, [sp, #-16]!
-
-        // adr X2, today
-        // ldrb W3, [X2]
 
         mov X1, #00
         mov X2, X0
@@ -68,7 +66,6 @@ _day_asm_7:
         bl _free
         ldr X0, [sp], #16
         // Return
-        // mov X0, X1
         ldp fp, lr, [sp], #16
         ret lr
 

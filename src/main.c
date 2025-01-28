@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <luajit-2.1/lauxlib.h>
+#include <luajit-2.1/lua.h>
+#include <luajit-2.1/lualib.h>
 #include "../go-out/libprint_go.h"
 
 #include "../hs-out/Print_stub.h"
@@ -21,6 +24,48 @@ char* day_c_1(char* so_far){
   out[other_len+my_len] = 0;
   free(so_far);
   return out;
+}
+
+char* day_lua_8(char* so_far){
+    lua_State* L = luaL_newstate();
+    luaL_openlibs(L);
+    luaL_dostring(L, 
+"local ffi = require(\"ffi\")\n"
+"ffi.cdef[[\n"
+"  void* malloc(size_t);\n" 
+"  void free(void*);\n" 
+"  size_t strlen(const char*);\n" 
+"  int printf(const char* fmt, ...);\n" 
+"]]\n"
+"function day_lua_8(so_far)\n"
+"  local today = \"Eight embedded scripts\\n\"\n"
+"  local all = ffi.string(so_far) .. today\n"
+"  out = ffi.C.malloc(#all+1)\n"
+"  ffi.fill(out, #all+1, 0)\n"
+"  ffi.copy(out, all, #all)\n"
+"  ffi.C.free(so_far)\n"
+ " local joe = ffi.cast(\"intptr_t\", out)\n"
+"  return tonumber(joe)\n"
+"end\n"
+                  );
+    lua_getglobal(L, "day_lua_8");
+    char* result = NULL;
+    if (lua_isfunction(L, -1)){
+      lua_pushlightuserdata(L, so_far);
+      int status = lua_pcall(L, 1, 1, 0);
+      if (status != LUA_OK){
+        printf("Lua call error\n");
+        printf("Error: %s\n", lua_tostring(L, -1));
+      } else {
+        if (lua_isnumber(L, -1)){
+          double addr = lua_tonumber(L, -1);
+          result = (char*)(long long)addr;
+        }
+      }
+    } else {
+      printf("Lua function not found\n");
+    }
+    return result;
 }
 
 int main(int argc, char** argv){
@@ -84,6 +129,20 @@ int main(int argc, char** argv){
   else if (strcmp("asm", argv[1]) == 0){
     char* start = strdup("On the seventh day of PL, Turing gave to me:\n");
     char* seven  = day_asm_7(start);
+    char* six  = day_fortran_6(seven);
+    char* five  = day_haskell_5(six);
+    char* four  = day_go_4(five);
+    char* three = day_zig_3(four);
+    char* two   = day_rust_2(three);
+    char* one   = day_c_1(two);
+    printf("%s", one);
+    free(one);
+  }
+
+  else if (strcmp("lua", argv[1]) == 0){
+    char* start = strdup("On the eigth day of PL, Turing gave to me:\n");
+    char* eight = day_lua_8(start);
+    char* seven  = day_asm_7(eight);
     char* six  = day_fortran_6(seven);
     char* five  = day_haskell_5(six);
     char* four  = day_go_4(five);
