@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,8 +6,8 @@
 #include <luajit-2.1/lua.h>
 #include <luajit-2.1/lualib.h>
 #include "../go-out/libprint_go.h"
-
 #include "../hs-out/Print_stub.h"
+#include "../chapel-out/print_chapel.h"
 
 extern char* day_rust_2(char*);
 extern char* day_zig_3(char*);
@@ -70,6 +71,8 @@ char* day_lua_8(char* so_far){
 
 int main(int argc, char** argv){
   hs_init(&argc, &argv);
+  char* dumb = "";
+  chpl_library_init(1, &dumb);
   
   if (argc < 2) {
     printf("[Usage] seabridge LANGUAGE\n");
@@ -152,6 +155,21 @@ int main(int argc, char** argv){
     printf("%s", one);
     free(one);
   }
+  else if (strcmp("chapel", argv[1]) == 0){
+    char* start = strdup("On the ninth day of PL, Turing gave to me:\n");
+    char* nine = (char*)day_chapel_9((uint8_t*)start);
+    char* eight = day_lua_8(nine);
+    char* seven  = day_asm_7(eight);
+    char* six  = day_fortran_6(seven);
+    char* five  = day_haskell_5(six);
+    char* four  = day_go_4(five);
+    char* three = day_zig_3(four);
+    char* two   = day_rust_2(three);
+    char* one   = day_c_1(two);
+    printf("%s", one);
+    free(one);
+  }
 
   hs_exit();
+  chpl_library_finalize();
 }

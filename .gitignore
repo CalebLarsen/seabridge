@@ -10,3 +10,4 @@ zig-out
 src/*.o
 .zig-cache
 asm-out
+chapel-out
