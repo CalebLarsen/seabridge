@@ -11,3 +11,4 @@ src/*.o
 .zig-cache
 asm-out
 chapel-out
+lisp-out

@@ -24,12 +24,15 @@ CHPL_LDFLAGS = -Lchapel-out -lprint_chapel -Wl,-rpath,chapel-out -L$(CHPL_RUNTIM
 CHPL_CFLAGS = -Ichapel-out -optc-Wno-unused -optc-Wno-uninitialized -optc-Wno-pointer-sign -optc-Wno-incompatible-pointer-types -optc-Wno-tautological-compare -I/opt/homebrew/Cellar/chapel/2.3.0/libexec/modules/internal -I$(CHPL_RUNTIME_INCL)/localeModels/flat -I$(CHPL_RUNTIME_INCL)/localeModels -I$(CHPL_RUNTIME_INCL)/comm/none -I$(CHPL_RUNTIME_INCL)/comm -I$(CHPL_RUNTIME_INCL)/tasks/qthreads -I$(CHPL_RUNTIME_INCL)/. -I$(CHPL_RUNTIME_INCL)/./qio -I$(CHPL_RUNTIME_INCL)/./atomics/cstdlib -I$(CHPL_RUNTIME_INCL)/./mem/jemalloc -I$(CHPL_THIRD_PARTY)/utf8-decoder -I$(CHPL_THIRD_PARTY)/qthread/install/darwin-arm64-native-llvm-none-flat-jemalloc-system/include -optc -Wno-error=unused-variable -I$(CHPL_THIRD_PARTY)/re2/install/darwin-arm64-native-llvm-none/include -I. -I/opt/homebrew/Cellar/gmp/6.3.0/include -I/opt/homebrew/Cellar/hwloc/2.11.2/include -I/opt/homebrew/Cellar/jemalloc/5.3.0/include -I/opt/homebrew/include
 CFLAGS := $(CFLAGS) $(CHPL_CFLAGS)
 LDFLAGS := $(LDFLAGS) $(CHPL_LDFLAGS)
+# Lisp
+LDFLAGS := $(LDFLAGS) -lecl -L./lisp-out -lprint_lisp
 
 all: seabridge
-	leaks -quiet --atExit -- ./seabridge chapel
+	leaks -quiet --atExit -- ./seabridge lisp
 
-seabridge: src/main.c target/debug/libprint_rust.a zig-out/lib/libprint_zig.a hs-out/Print.o go-out/libprint_go.a fortran-out/libprint_fortran.o asm-out/asm_print.o chapel-out/libprint_chapel.so
+seabridge: src/main.c target/debug/libprint_rust.a zig-out/lib/libprint_zig.a hs-out/Print.o go-out/libprint_go.a fortran-out/libprint_fortran.o asm-out/asm_print.o chapel-out/libprint_chapel.so lisp-out/libprint_lisp.a
 	ghc $(CFLAGS) $(LDFLAGS) --make -no-hs-main -optc-O -g src/main.c hs-out/Print.o fortran-out/libprint_fortran.o asm-out/asm_print.o -o seabridge
+	@rm src/main.o
 
 c-out/main.o: src/main.c
 	@mkdir -p c-out
@@ -58,6 +61,11 @@ fortran-out/libprint_fortran.o: src/print.f90
 chapel-out/libprint_chapel.so: src/print.chpl
 	chpl --library --dynamic --library-dir=chapel-out src/print.chpl -o print_chapel
 
+lisp-out/libprint_lisp.a: src/print.lisp build.lisp
+	@mkdir -p lisp-out
+	ecl -load build.lisp
+	@rm src/print.o
+
 .PHONY: clean
 clean:
 	rm -f src/main.o
@@ -67,4 +75,5 @@ clean:
 	rm -rf fortran-out
 	rm -rf asm-out
 	rm -rf chapel-out
+	rm -rf lisp-out
 	rm *.mod
