@@ -46,7 +46,7 @@ char* day_lua_8(char* so_far){
 "  ffi.fill(out, #all+1, 0)\n"
 "  ffi.copy(out, all, #all)\n"
 "  ffi.C.free(so_far)\n"
- " local joe = ffi.cast(\"intptr_t\", out)\n"
+"  local joe = ffi.cast(\"intptr_t\", out)\n"
 "  return tonumber(joe)\n"
 "end\n"
                   );
