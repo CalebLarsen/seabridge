@@ -29,6 +29,16 @@ char* day_c_1(char* so_far){
   return out;
 }
 
+char* day_haskell_5(char* so_far){
+  char* dumb = "";
+  char** dumb2 = &dumb;
+  int dumb_num = 1;
+  hs_init(&dumb_num, &dumb2);
+  char* ret = day_haskell_5_hs(so_far);
+  hs_exit();
+  return ret;
+}
+
 char* day_lua_8(char* so_far){
   char* data = malloc(src_print_lua_len + 1);
   for (unsigned int i = 0; i < src_print_lua_len; i++){
@@ -59,22 +69,29 @@ char* day_lua_8(char* so_far){
   return result;
 }
 
-char* day_lisp_10(char* so_far){
-    cl_object res = cl_funcall(2,
-                               ecl_read_from_cstring("day_lisp_10"),
-                               ecl_make_foreign_data(ecl_read_from_cstring("(* :char)"),
-                                                     strlen(so_far)+1,
-                                                     so_far));
+char* day_chapel_9(char* so_far){
+  char* dumb = "";
+  chpl_library_init(1, &dumb);
+  char* ret = (char*)day_chapel_9_chpl((uint8_t*)so_far);
+  chpl_library_finalize();
+  return ret;
+}
 
-    return ecl_foreign_data_pointer_safe(res);
+char* day_lisp_10(char* so_far){
+  char* dumb = "";
+  cl_boot(1, &dumb);
+  read_VV(OBJNULL, init_print);
+  cl_object res = cl_funcall(2,
+                             ecl_read_from_cstring("day_lisp_10"),
+                             ecl_make_foreign_data(ecl_read_from_cstring("(* :char)"),
+                                                   strlen(so_far)+1,
+                                                   so_far));
+  char* ret = ecl_foreign_data_pointer_safe(res);
+  cl_shutdown();
+  return ret;
 }
 
 int main(int argc, char** argv){
-  hs_init(&argc, &argv);
-  char* dumb = "";
-  chpl_library_init(1, &dumb);
-  cl_boot(1, &dumb);
-  read_VV(OBJNULL, init_print);
   
   if (argc < 2) {
     printf("[Usage] seabridge LANGUAGE\n");
@@ -143,7 +160,6 @@ int main(int argc, char** argv){
     printf("%s", one);
     free(one);
   }
-
   else if (strcmp("lua", argv[1]) == 0){
     char* start = strdup("On the eigth day of PL, Turing gave to me:\n");
     char* eight = day_lua_8(start);
@@ -159,7 +175,7 @@ int main(int argc, char** argv){
   }
   else if (strcmp("chapel", argv[1]) == 0){
     char* start = strdup("On the ninth day of PL, Turing gave to me:\n");
-    char* nine = (char*)day_chapel_9((uint8_t*)start);
+    char* nine = day_chapel_9(start);
     char* eight = day_lua_8(nine);
     char* seven  = day_asm_7(eight);
     char* six  = day_fortran_6(seven);
@@ -174,7 +190,7 @@ int main(int argc, char** argv){
   else if (strcmp("lisp", argv[1]) == 0){
     char* start = strdup("On the tenth day of PL, Turing gave to me:\n");
     char* ten = day_lisp_10(start);
-    char* nine = (char*)day_chapel_9((uint8_t*)ten);
+    char* nine = day_chapel_9(ten);
     char* eight = day_lua_8(nine);
     char* seven  = day_asm_7(eight);
     char* six  = day_fortran_6(seven);
@@ -185,10 +201,5 @@ int main(int argc, char** argv){
     char* one   = day_c_1(two);
     printf("%s", one);
     free(one);
-    // free(a);
   }
-
-  hs_exit();
-  chpl_library_finalize();
-  cl_shutdown();
 }

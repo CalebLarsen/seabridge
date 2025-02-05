@@ -3,7 +3,7 @@ use CTypes;
 extern proc malloc(n: c_size_t): c_ptr(uint(8));
 extern proc free(p: c_ptr(uint(8)));
 
-export proc day_chapel_9(so_far: c_ptr(uint(8))): c_ptr(uint(8))  {
+export proc day_chapel_9_chpl(so_far: c_ptr(uint(8))): c_ptr(uint(8))  {
 	var today: string = "Nine processors sharing\n";
 	var so_far_len = strLen(so_far);
 	var today_len = today.size;
