@@ -12,3 +12,4 @@ src/*.o
 asm-out
 chapel-out
 lisp-out
+lua-out
