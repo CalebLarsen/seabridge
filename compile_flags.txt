@@ -1,6 +1,6 @@
 -I/opt/homebrew/opt/python@3.13/Frameworks/Python.framework/Versions/3.13/include/python3.13
 -I/opt/homebrew/opt/python@3.13/Frameworks/Python.framework/Versions/3.13/include/python3.13
--I/opt/homebrew/lib/ghc-9.10.1/lib/aarch64-osx-ghc-9.10.1/rts-1.0.2/include
+-I/opt/homebrew/lib/ghc-9.12.1/lib/aarch64-osx-ghc-9.12.1-inplace/rts-1.0.2/include
 -I/opt/homebrew/Cellar/chapel/2.3.0/libexec/modules/internal
 -I/opt/homebrew/Cellar/chapel/2.3.0/libexec/runtime/include/localeModels/flat
 -I/opt/homebrew/Cellar/chapel/2.3.0/libexec/runtime/include/localeModels

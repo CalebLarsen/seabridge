@@ -10,12 +10,13 @@
 #include "../hs-out/Print_stub.h"
 #include "../chapel-out/print_chapel.h"
 #include "../lua-out/print_lua.h"
+#include "crystal.h"
 
 extern char* day_rust_2(char*);
 extern char* day_zig_3(char*);
 extern char* day_fortran_6(char*);
 extern char* day_asm_7(char*);
-extern void init_print(cl_object cblock);
+extern void init_print_lisp(cl_object cblock);
 
 char* day_c_1(char* so_far){
   char* today = "And a null pointer crashing my code\n";
@@ -78,9 +79,7 @@ char* day_chapel_9(char* so_far){
 }
 
 char* day_lisp_10(char* so_far){
-  char* dumb = "";
-  cl_boot(1, &dumb);
-  read_VV(OBJNULL, init_print);
+  read_VV(OBJNULL, init_print_lisp);
   cl_object res = cl_funcall(2,
                              ecl_read_from_cstring("day_lisp_10"),
                              ecl_make_foreign_data(ecl_read_from_cstring("(* :char)"),
@@ -91,8 +90,16 @@ char* day_lisp_10(char* so_far){
   return ret;
 }
 
+char* day_crystal_11(char* so_far){
+  crystal_init();
+  char* res = day_crystal(so_far);
+  return res;
+}
+
 int main(int argc, char** argv){
-  
+  // The Lisp VM has to be booted *BEFORE* Crystal. I don't know why
+  char* dumb = "";
+  cl_boot(1, &dumb);
   if (argc < 2) {
     printf("[Usage] seabridge LANGUAGE\n");
     // return 1;
@@ -202,4 +209,20 @@ int main(int argc, char** argv){
     printf("%s", one);
     free(one);
   }
+  else if (strcmp("crystal", argv[1]) == 0){
+    char* start = strdup("On the eleventh day of PL, Turing gave to me:\n");
+    char* eleven = day_crystal_11(start);
+    char* ten = day_lisp_10(eleven);
+    char* nine = day_chapel_9(ten);
+    char* eight = day_lua_8(nine);
+    char* seven  = day_asm_7(eight);
+    char* six  = day_fortran_6(seven);
+    char* five  = day_haskell_5(six);
+    char* four  = day_go_4(five);
+    char* three = day_zig_3(four);
+    char* two   = day_rust_2(three);
+    char* one   = day_c_1(two);
+    printf("%s", one);
+    free(one);
+  }  
 }

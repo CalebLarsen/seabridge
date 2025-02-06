@@ -2,5 +2,5 @@
 
 (c:build-static-library "lisp-out/print_lisp"
                         :lisp-files '("src/print.o")
-                        :init-name "init_print")
+                        :init-name "init_print_lisp")
 (quit)
