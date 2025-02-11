@@ -1,7 +1,4 @@
 CFLAGS := $(CFLAGS) -g
-# CFLAGS= $(CFLAGS) $(shell /opt/homebrew/bin/python3-config --cflags)
-# # Python
-# LDFLAGS=$(shell /opt/homebrew/bin/python3-config --ldflags --embed)
 # Rust
 LDFLAGS := $(LDFLAGS) -lprint_rust -L./target/debug
 # Zig
@@ -28,10 +25,16 @@ LDFLAGS := $(LDFLAGS) $(CHPL_LDFLAGS)
 LDFLAGS := $(LDFLAGS) -lecl -L./lisp-out -lprint_lisp
 # Crystal
 LDFLAGS := $(LDFLAGS) -L./crystal-out -lprint_crystal
-all: seabridge
-	leaks -quiet --atExit -- ./seabridge crystal
+# Java
+CFLAGS := $(CFLAGS) -I/opt/homebrew/opt/openjdk/include
+# LDFLAGS := $(LDFLAGS) -L/opt/homebrew/Cellar/openjdk/23.0.2/libexec/openjdk.jdk/Contents/Home/lib -L/opt/homebrew/Cellar/openjdk/23.0.2/libexec/openjdk.jdk/Contents/Home/lib/server -ljli -ljvm
+LDFLAGS := $(LDFLAGS) -L/opt/homebrew/Cellar/openjdk/23.0.2/libexec/openjdk.jdk/Contents/Home/lib -L/opt/homebrew/Cellar/openjdk/23.0.2/libexec/openjdk.jdk/Contents/Home/lib/server -ljli -ljvm
+LD_LIBRARY_PATH := /opt/homebrew/Cellar/openjdk/23.0.2/libexec/openjdk.jdk/Contents/Home/lib/:/opt/homebrew/Cellar/openjdk/23.0.2/libexec/openjdk.jdk/Contents/Home/lib/server/
 
-seabridge: src/main.c target/debug/libprint_rust.a zig-out/lib/libprint_zig.a hs-out/Print.o go-out/libprint_go.a fortran-out/libprint_fortran.o asm-out/asm_print.o chapel-out/libprint_chapel.so lisp-out/libprint_lisp.a lua-out/print_lua.h crystal-out/libprint_crystal.dylib
+all: seabridge
+	@LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) leaks -quiet --atExit -- ./seabridge
+
+seabridge: src/main.c target/debug/libprint_rust.a zig-out/lib/libprint_zig.a hs-out/Print.o go-out/libprint_go.a fortran-out/libprint_fortran.o asm-out/asm_print.o chapel-out/libprint_chapel.so lisp-out/libprint_lisp.a lua-out/print_lua.h crystal-out/libprint_crystal.dylib java-out/Print.class
 	ghc $(CFLAGS) $(LDFLAGS) --make -no-hs-main -optc-O -g src/main.c hs-out/Print.o fortran-out/libprint_fortran.o asm-out/asm_print.o -o seabridge
 	@rm src/main.o
 
@@ -75,6 +78,14 @@ crystal-out/libprint_crystal.dylib: src/print.cr src/crystal.h
 	@mkdir -p crystal-out
 	crystal build src/print.cr --single-module --link-flags="-shared" -o crystal-out/libprint_crystal.dylib
 
+java-out/Print.class: src/print.java java-out/libprint.dylib
+	@mkdir -p java-out
+	/opt/homebrew/opt/java/bin/javac -d java-out src/print.java
+
+java-out/libprint.dylib: src/jni.c
+	@mkdir -p java-out
+	gcc -fPIC -I/opt/homebrew/opt/openjdk/include -shared -o java-out/libprint.dylib src/jni.c
+
 .PHONY: clean
 clean:
 	rm -f src/main.o
@@ -87,4 +98,5 @@ clean:
 	rm -rf lisp-out
 	rm -rf lua-out
 	rm -rf crystal-out
+	rm -rf java-out
 	rm *.mod

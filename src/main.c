@@ -11,6 +11,7 @@
 #include "../chapel-out/print_chapel.h"
 #include "../lua-out/print_lua.h"
 #include "crystal.h"
+#include <jni.h>
 
 extern char* day_rust_2(char*);
 extern char* day_zig_3(char*);
@@ -96,14 +97,63 @@ char* day_crystal_11(char* so_far){
   return res;
 }
 
+char* day_java_12(char* so_far){
+  JavaVM* vm;
+  JNIEnv* env;
+  JavaVMInitArgs vm_args;
+  jint result;
+  jclass cls;
+  jmethodID mid;
+  JavaVMOption options[3];
+  options[0].optionString = "-Djava.class.path=./java-out";
+  options[1].optionString = "-Djava.library.path=./java-out";
+  vm_args.options = options;
+  vm_args.nOptions = 2;
+  // vm_args.ignoreUnrecognized = JNI_TRUE;
+  vm_args.version = JNI_VERSION_1_8;
+  result = JNI_CreateJavaVM(&vm, (void**)&env, &vm_args);
+  if (result != JNI_OK){
+    printf("Failed to create JVM\n");
+    exit(1);
+  }
+
+  cls = (*env)->FindClass(env, "Print");
+  if (cls == NULL){
+    printf("\n\nFailed to find Java Print class\n\n\n");
+    exit(1);
+  }
+  mid = (*env)->GetStaticMethodID(env, cls, "day_java", "(J)J");
+  if (mid == NULL){
+    printf("\n\nFailed to find Java function\n\n\n");
+    exit(1);
+  }
+
+  long ret = (*env)->CallStaticLongMethod(env, cls, mid, (jlong)so_far);
+
+  return (char*)ret;
+}
+
 int main(int argc, char** argv){
   // The Lisp VM has to be booted *BEFORE* Crystal. I don't know why
   char* dumb = "";
   cl_boot(1, &dumb);
   if (argc < 2) {
-    printf("[Usage] seabridge LANGUAGE\n");
-    // return 1;
-  }
+    char* start = strdup("On the twelfth day of PL, Turing gave to me:\n");
+    char* twelve = day_java_12(start);
+    char* eleven = day_crystal_11(twelve);
+    char* ten = day_lisp_10(eleven);
+    char* nine = day_chapel_9(ten);
+    char* eight = day_lua_8(nine);
+    char* seven  = day_asm_7(eight);
+    char* six  = day_fortran_6(seven);
+    char* five  = day_haskell_5(six);
+    char* four  = day_go_4(five);
+    char* three = day_zig_3(four);
+    char* two   = day_rust_2(three);
+    char* one   = day_c_1(two);
+    printf("%s", one);
+    free(one);
+   }
   else if (strcmp("c", argv[1]) == 0){
     char* f = strdup("On the first day of PL, Turing gave to me:\n");
     char* o = day_c_1(f);
@@ -212,6 +262,23 @@ int main(int argc, char** argv){
   else if (strcmp("crystal", argv[1]) == 0){
     char* start = strdup("On the eleventh day of PL, Turing gave to me:\n");
     char* eleven = day_crystal_11(start);
+    char* ten = day_lisp_10(eleven);
+    char* nine = day_chapel_9(ten);
+    char* eight = day_lua_8(nine);
+    char* seven  = day_asm_7(eight);
+    char* six  = day_fortran_6(seven);
+    char* five  = day_haskell_5(six);
+    char* four  = day_go_4(five);
+    char* three = day_zig_3(four);
+    char* two   = day_rust_2(three);
+    char* one   = day_c_1(two);
+    printf("%s", one);
+    free(one);
+  }
+  else if (strcmp("java", argv[1]) == 0){
+    char* start = strdup("On the twelfth day of PL, Turing gave to me:\n");
+    char* twelve = day_java_12(start);
+    char* eleven = day_crystal_11(twelve);
     char* ten = day_lisp_10(eleven);
     char* nine = day_chapel_9(ten);
     char* eight = day_lua_8(nine);

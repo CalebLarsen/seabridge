@@ -18,6 +18,7 @@
 -I/opt/homebrew/Cellar/hwloc/2.11.2/include
 -I/opt/homebrew/Cellar/jemalloc/5.3.0/include
 -I/opt/homebrew/include
+-I/opt/homebrew/opt/openjdk/include
 -fno-strict-overflow
 -Wsign-compare
 -Wunreachable-code
